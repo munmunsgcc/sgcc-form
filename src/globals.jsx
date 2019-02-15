@@ -1,10 +1,10 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 const CONSTANTS = {
-  ERROR: "#ff0000",
-  BLUE: "#1B75BC",
-  ORANGE: "#F37021"
+  ERROR: '#ff0000',
+  BLUE: '#1B75BC',
+  ORANGE: '#F37021',
 };
 
 const COMPONENTS = {
@@ -14,8 +14,8 @@ const COMPONENTS = {
       display: block;
       margin-bottom: 10px;
     }
-    input[type="text"],
-    input[type="email"] {
+    input[type='text'],
+    input[type='email'] {
       outline: 0;
       border-width: 0 0 2px;
       border-color: ${CONSTANTS.BLUE};
@@ -29,12 +29,12 @@ const COMPONENTS = {
       }
     }
     .Checkbox {
-      input[type="checkbox"] {
+      input[type='checkbox'] {
         margin-right: 10px;
       }
     }
     .Radio {
-      input[type="radio"] {
+      input[type='radio'] {
         margin-right: 10px;
       }
     }
@@ -50,7 +50,7 @@ const COMPONENTS = {
     `;
 
     return <Star>*</Star>;
-  }
+  },
 };
 
-export { COMPONENTS };
+export default COMPONENTS;
