@@ -2,15 +2,8 @@ import React from "react";
 import { COMPONENTS } from "./globals.js";
 
 export default props => {
-  const {
-    type,
-    name,
-    placeholder,
-    onChange,
-    error,
-    label_text,
-    required
-  } = props;
+  const { type, name, placeholder, onChange, label_text, required } = props;
+  const error = props.error || {};
   let show_star = required ? <COMPONENTS.star /> : "";
 
   return (

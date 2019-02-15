@@ -4,7 +4,8 @@ import "./css/globals.css";
 import { COMPONENTS } from "./globals.js";
 
 export default props => {
-  const { options, name, label_text, required, other, error, onChange } = props;
+  const { options, name, label_text, required, other, onChange } = props;
+  const error = props.error || {};
   const list = options.map((opt, index) => {
     return (
       <div className="Checkbox" key={name + index}>

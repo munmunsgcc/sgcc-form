@@ -1,5 +1,5 @@
 import React from "react";
-import { Formik, Form } from "formik";
+import { Formik, Form, yupToFormErrors } from "formik";
 import styled from "styled-components";
 import * as Yup from "yup";
 
@@ -52,8 +52,6 @@ const schema = Yup.object().shape({
     obj => {
       const { google, facebook, instagram, online_platform, other } = obj;
 
-      //ensures that the Other: option is always accompanied by text.
-      //checked first to get this condition out of the way.
       if (other.checkbox && !other.input) {
         return false;
       }
@@ -68,63 +66,35 @@ const schema = Yup.object().shape({
     }
   ),
   courses: Yup.object({
-    fun1: Yup.string(),
-    basics1: Yup.string(),
-    basics3: Yup.string(),
-    poc1: Yup.string(),
-    poc2: Yup.string(),
-    java: Yup.string(),
-    not_sure: Yup.string(),
-    other: Yup.object({
-      radio: Yup.string(),
-      input: Yup.string()
+    radio: Yup.string()
+      .required()
+      .oneOf(
+        ["fun1", "boc1", "boc3", "poc1", "poc2", "java", "not_sure", "other"],
+        "Please select one option"
+      ),
+    input: Yup.string().when("radio", {
+      is: "other",
+      then: Yup.string().required("Please add comment in the text box")
     })
-  }).test(
-    "testCourseRadios",
-    obj => {
-      const { other } = obj.value;
-
-      return other.radio && !other.input
-        ? "Please add comment in the textbox"
-        : "Please select at least one";
-    },
-    obj => {
-      const { fun1, basics1, basics3, poc1, poc2, java, not_sure, other } = obj;
-
-      //ensures that the Other: option is always accompanied by text.
-      //checked first to get this condition out of the way.
-      if (other.radio && !other.input) {
-        return false;
-      }
-
-      return (
-        fun1 ||
-        basics1 ||
-        basics3 ||
-        poc1 ||
-        poc2 | java ||
-        not_sure ||
-        (other.radio && other.input)
-      );
-    }
-  ),
+  }),
   campus: Yup.object({
-    bukit_timah: Yup.string(),
-    marine_parade: Yup.string(),
-    no_pref: Yup.string()
-  }).test("testCampusRadios", "Please select one option", obj => {
-    const { bukit_timah, marine_parade, no_pref } = obj;
-    return bukit_timah || marine_parade || no_pref;
+    radio: Yup.string()
+      .required()
+      .oneOf(
+        ["bukit_timah", "marine_parade", "no_pref"],
+        "Please select one option"
+      )
   }),
   prior_exp: Yup.object({
-    no: Yup.string(),
-    yes_010: Yup.string(),
-    yes_1120: Yup.string(),
-    yes_21: Yup.string()
-  }).test("testPriorRadios", "Please select one option", obj => {
-    const { no, yes_010, yes_1120, yes_21 } = obj;
-    return no || yes_010 || yes_1120 || yes_21;
-  })
+    radio: Yup.string()
+      .required()
+      .oneOf(
+        ["no", "yes_010", "yes_1120", "yes_21"],
+        "Please select one option"
+      )
+  }),
+  prior_exp_detail: Yup.string(),
+  comment: Yup.string()
 });
 
 class CustomForm extends React.Component {
@@ -148,30 +118,11 @@ class CustomForm extends React.Component {
         input: ""
       }
     },
-    courses: {
-      fun1: "",
-      basics1: "",
-      basics3: "",
-      poc1: "",
-      poc2: "",
-      java: "",
-      not_sure: "",
-      other: {
-        radio: "",
-        input: ""
-      }
-    },
-    campus: {
-      bukit_timah: "",
-      marine_parade: "",
-      no_pref: ""
-    },
-    prior_exp: {
-      no: "",
-      yes_010: "",
-      yes_1120: "",
-      yes_21: ""
-    }
+    courses: { radio: "", input: "" },
+    campus: { radio: "" },
+    prior_exp: { radio: "" },
+    prior_exp_detail: "",
+    comment: ""
   };
 
   handleSubmit = (values, actions) => {
@@ -198,7 +149,7 @@ class CustomForm extends React.Component {
           initialValues={this.initialValues}
           validationSchema={schema}
         >
-          {({ isSubmitting, errors, handleChange }) => {
+          {({ isSubmitting, errors, handleChange, values }) => {
             return (
               <Form>
                 <TextInput
@@ -354,6 +305,16 @@ class CustomForm extends React.Component {
                       text: "Yes: 21 hrs and above"
                     }
                   ]}
+                />
+                <TextInput
+                  name="prior_exp_detail"
+                  label_text="Details of prior coding experience (if any)"
+                  onChange={handleChange}
+                />
+                <TextInput
+                  name="comment"
+                  label_text="Any other questions or comments"
+                  onChange={handleChange}
                 />
                 <button type="submit" disabled={isSubmitting}>
                   SUBMIT
