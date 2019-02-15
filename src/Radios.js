@@ -1,16 +1,15 @@
 import React from "react";
 
-import "./css/globals.css";
 import { COMPONENTS } from "./globals.js";
 
 export default props => {
-  const { options, name, label_text, required, other, error, onChange } = props;
-  const list = options.map((opt, index) => {
+  const { options, required, other, name, onChange, label_text, error } = props;
+  let list = options.map((opt, index) => {
     return (
-      <div className="Checkbox" key={name + index}>
+      <div className="Radio" key={name + index}>
         <input
+          type="radio"
           onChange={onChange}
-          type="checkbox"
           name={name + "." + opt.value}
           value={opt.value}
         />
@@ -22,22 +21,22 @@ export default props => {
 
   if (other === true) {
     list.push(
-      <div className="Checkbox" key={name + list.length}>
+      <div className="Radio" key={name + list.length}>
         <input
-          type="checkbox"
-          name={name + ".other.checkbox"}
-          value="other"
+          type="radio"
           onChange={onChange}
+          name={name + ".other.radio"}
+          value="other"
         />
         Other:
-        <input type="text" name={name + ".other.input"} onChange={onChange} />
+        <input type="text" onChange={onChange} name={name + ".other.input"} />
       </div>
     );
   }
 
   if (error[name]) {
     list.push(
-      <p key={name + "error"} className="Error">
+      <p className="Error" key={name + "error"}>
         {error[name]}
       </p>
     );

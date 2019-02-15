@@ -1,36 +1,5 @@
 import React from "react";
-import styled from "styled-components";
-
-import CONSTANT from "./css/globals.js";
-
-const NodeInput = styled.div`
-  margin-bottom: 20px;
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  input {
-    outline: 0;
-    border-width: 0 0 2px;
-    border-color: ${CONSTANT.BLUE};
-    width: 40%;
-    padding: 8px 6px;
-    font-family: PT Sans;
-    font-size: 14px;
-
-    &.Error {
-      border-color: ${CONSTANT.ERROR};
-    }
-  }
-  .Error {
-    color: ${CONSTANT.ERROR};
-  }
-`;
-
-const Star = styled.span`
-  color: ${CONSTANT.ERROR};
-  font-weight: bold;
-`;
+import { COMPONENTS } from "./globals.js";
 
 export default props => {
   const {
@@ -42,10 +11,10 @@ export default props => {
     label_text,
     required
   } = props;
-  let show_star = required ? <Star>*</Star> : "";
+  let show_star = required ? <COMPONENTS.star /> : "";
 
   return (
-    <NodeInput>
+    <COMPONENTS.input>
       <label htmlFor={name}>
         {label_text}
         {show_star}
@@ -58,6 +27,6 @@ export default props => {
         placeholder={placeholder ? placeholder : ""}
       />
       {error[name] ? <p className="Error">{error[name]}</p> : null}
-    </NodeInput>
+    </COMPONENTS.input>
   );
 };

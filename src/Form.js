@@ -1,28 +1,18 @@
 import React from "react";
-import { Formik, Field, Form } from "formik";
+import { Formik, Form } from "formik";
 import styled from "styled-components";
 import * as Yup from "yup";
 
+import Radios from "./Radios";
 import TextInput from "./TextInput";
 import Checkboxes from "./Checkboxes";
 import "./css/globals.css";
-
-/**
- * //Select or Checkboxes
- * 1. How did you hear about us?
- * 2. Which course are you interested in?
- * 3. Preferred Campus
- * 4. Does your child have prior coding experience?
- *
- * //Textarea
- * 5. Details of prior coding experience
- * 6. Any other questions or comments
- */
 
 const DialogBox = styled.div`
   border: 1px solid #6f6e6e;
   padding: 15px;
   border-radius: 10px;
+  width: 50%;
 `;
 
 const schema = Yup.object().shape({
@@ -41,12 +31,105 @@ const schema = Yup.object().shape({
     .positive()
     .moreThan(1900)
     .lessThan(2100),
-  hear_from: Yup.array()
-    .required()
-    .of(Yup.string())
+  hear_from: Yup.object({
+    google: Yup.bool(),
+    facebook: Yup.bool(),
+    instagram: Yup.bool(),
+    online_platform: Yup.bool(),
+    other: Yup.object({
+      checkbox: Yup.bool(),
+      input: Yup.string()
+    })
+  }).test(
+    "testHearFromCheckboxes",
+    obj => {
+      const { other } = obj.value;
+
+      return other.checkbox && !other.input
+        ? "Please add comment in the textbox"
+        : "Please select at least one";
+    },
+    obj => {
+      const { google, facebook, instagram, online_platform, other } = obj;
+
+      //ensures that the Other: option is always accompanied by text.
+      //checked first to get this condition out of the way.
+      if (other.checkbox && !other.input) {
+        return false;
+      }
+
+      return (
+        google ||
+        facebook ||
+        instagram ||
+        online_platform ||
+        (other.checkbox && other.input)
+      );
+    }
+  ),
+  courses: Yup.object({
+    fun1: Yup.string(),
+    basics1: Yup.string(),
+    basics3: Yup.string(),
+    poc1: Yup.string(),
+    poc2: Yup.string(),
+    java: Yup.string(),
+    not_sure: Yup.string(),
+    other: Yup.object({
+      radio: Yup.string(),
+      input: Yup.string()
+    })
+  }).test(
+    "testCourseRadios",
+    obj => {
+      const { other } = obj.value;
+
+      return other.radio && !other.input
+        ? "Please add comment in the textbox"
+        : "Please select at least one";
+    },
+    obj => {
+      const { fun1, basics1, basics3, poc1, poc2, java, not_sure, other } = obj;
+
+      //ensures that the Other: option is always accompanied by text.
+      //checked first to get this condition out of the way.
+      if (other.radio && !other.input) {
+        return false;
+      }
+
+      return (
+        fun1 ||
+        basics1 ||
+        basics3 ||
+        poc1 ||
+        poc2 | java ||
+        not_sure ||
+        (other.radio && other.input)
+      );
+    }
+  ),
+  campus: Yup.object({
+    bukit_timah: Yup.string(),
+    marine_parade: Yup.string(),
+    no_pref: Yup.string()
+  }).test("testCampusRadios", "Please select one option", obj => {
+    const { bukit_timah, marine_parade, no_pref } = obj;
+    return bukit_timah || marine_parade || no_pref;
+  }),
+  prior_exp: Yup.object({
+    no: Yup.string(),
+    yes_010: Yup.string(),
+    yes_1120: Yup.string(),
+    yes_21: Yup.string()
+  }).test("testPriorRadios", "Please select one option", obj => {
+    const { no, yes_010, yes_1120, yes_21 } = obj;
+    return no || yes_010 || yes_1120 || yes_21;
+  })
 });
 
 class CustomForm extends React.Component {
+  // initialValues MUST be added to ensure all values are given a default value
+  // and are accounted for during form submissing, which makes your coding much // easier.
   initialValues = {
     email: "",
     phone: "",
@@ -55,11 +138,46 @@ class CustomForm extends React.Component {
     child_first_name: "",
     child_last_name: "",
     child_birth_year: "",
-    hear_from: []
+    hear_from: {
+      google: false,
+      facebook: false,
+      instagram: false,
+      online_platform: false,
+      other: {
+        checkbox: false,
+        input: ""
+      }
+    },
+    courses: {
+      fun1: "",
+      basics1: "",
+      basics3: "",
+      poc1: "",
+      poc2: "",
+      java: "",
+      not_sure: "",
+      other: {
+        radio: "",
+        input: ""
+      }
+    },
+    campus: {
+      bukit_timah: "",
+      marine_parade: "",
+      no_pref: ""
+    },
+    prior_exp: {
+      no: "",
+      yes_010: "",
+      yes_1120: "",
+      yes_21: ""
+    }
   };
 
   handleSubmit = (values, actions) => {
     const { setSubmitting, resetForm } = actions;
+
+    console.log("Submitted: ", values);
 
     setSubmitting(false);
     //clears form
@@ -81,7 +199,6 @@ class CustomForm extends React.Component {
           validationSchema={schema}
         >
           {({ isSubmitting, errors, handleChange }) => {
-            console.log(errors);
             return (
               <Form>
                 <TextInput
@@ -106,6 +223,7 @@ class CustomForm extends React.Component {
                   required={true}
                   other={true}
                   error={errors}
+                  onChange={handleChange}
                   options={[
                     { value: "google", text: "Google" },
                     { value: "facebook", text: "Facebook" },
@@ -151,6 +269,91 @@ class CustomForm extends React.Component {
                   required={true}
                   onChange={handleChange}
                   error={errors}
+                />
+                <Radios
+                  name="courses"
+                  label_text="Which course are you interested in?"
+                  other={true}
+                  required={true}
+                  onChange={handleChange}
+                  error={errors}
+                  options={[
+                    {
+                      value: "fun1",
+                      text: "Fundamentals 1 (ages 7 - 8)"
+                    },
+                    {
+                      value: "basics1",
+                      text: "Basics 1 (ages 9 - 10)"
+                    },
+                    {
+                      value: "basics3",
+                      text: "Basics 3 (ages 11 - 12)"
+                    },
+                    {
+                      value: "poc1",
+                      text: "Principles 1 (ages 13 - 18)"
+                    },
+                    {
+                      value: "poc2",
+                      text: "Principles 2 and above (ages 13 - 18)"
+                    },
+                    {
+                      value: "java",
+                      text:
+                        "Java iGCSE/IB/AP focused Academics Programme (ages 15-18) (NEW!)"
+                    },
+                    {
+                      value: "not_sure",
+                      text: "Not sure, please advise."
+                    }
+                  ]}
+                />
+                <Radios
+                  name="campus"
+                  label_text="Preferred Campus"
+                  required={true}
+                  error={errors}
+                  onChange={handleChange}
+                  options={[
+                    {
+                      value: "bukit_timah",
+                      text: "Bukit Timah (King's Arcade)"
+                    },
+                    {
+                      value: "marine_parade",
+                      text: "Marine Parade (Parkway Centre)"
+                    },
+                    {
+                      value: "no_pref",
+                      text: "No Preference"
+                    }
+                  ]}
+                />
+                <Radios
+                  name="prior_exp"
+                  label_text="Does your child have prior coding experience?"
+                  required={true}
+                  onChange={handleChange}
+                  error={errors}
+                  options={[
+                    {
+                      value: "no",
+                      text: "No"
+                    },
+                    {
+                      value: "yes_010",
+                      text: "Yes: 0 - 10 hrs"
+                    },
+                    {
+                      value: "yes_1120",
+                      text: "Yes: 11 - 20 hrs"
+                    },
+                    {
+                      value: "yes_21",
+                      text: "Yes: 21 hrs and above"
+                    }
+                  ]}
                 />
                 <button type="submit" disabled={isSubmitting}>
                   SUBMIT
