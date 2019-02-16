@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { Field } from 'formik';
 import COMPONENTS from './globals';
 
 function row({
@@ -8,7 +8,7 @@ function row({
 }) {
   return (
     <div className="Radio" key={key}>
-      <input type="radio" onChange={handler} name={name} value={value} />
+      <Field type="radio" onChange={handler} name={name} value={value} />
       {text}
       {input || null}
     </div>
@@ -20,7 +20,7 @@ class Radios extends React.Component {
     const {
       options, required, other, name, onChange, labelText,
     } = this.props;
-    let { error = {} } = this.props;
+    let { errors = {}, touched = {} } = this.props;
     const showStar = required === true ? <COMPONENTS.star /> : '';
 
     const list = options.map((opt, index) => {
@@ -41,17 +41,18 @@ class Radios extends React.Component {
           handler: onChange,
           value: 'other',
           text: 'Other:',
-          input: <input name={`${name}.input`} type="text" onChange={onChange} />,
+          input: <Field name={`${name}.input`} type="text" onChange={onChange} />,
         }),
       );
     }
 
-    error = error[name] ? error[name].radio || error[name].input : null;
+    errors = errors[name] ? errors[name].input || errors[name].radio : errors[name];
+    touched = touched[name] ? touched[name].radio || touched[name].input : touched[name];
 
-    if (error) {
+    if (errors && touched) {
       list.push(
         <p className="Error" key={`${name}error`}>
-          {error}
+          {errors}
         </p>,
       );
     }
@@ -93,7 +94,8 @@ Radios.defaultProps = {
   name: '',
   onChange: () => {},
   labelText: '',
-  error: {},
+  errors: {},
+  touched: {},
 };
 
 Radios.propTypes = {
@@ -103,7 +105,8 @@ Radios.propTypes = {
   name: PropTypes.string,
   onChange: PropTypes.func,
   labelText: PropTypes.string,
-  error: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  errors: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  touched: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
 };
 
 export default Radios;
