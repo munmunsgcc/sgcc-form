@@ -5,6 +5,18 @@ import { Field } from 'formik';
 import './css/globals.css';
 import COMPONENTS from './globals';
 
+/**
+ * Creates a group of checkboxes.
+ * @param {Object[]} options - An array of checkboxes.
+ * @param {string} options[].value - The checkbox's value
+ * @param {string} options[].text - The checkbox's accompanying text.
+ * @param {string} labelText - The text for the group of checkboxes.
+ * @param {boolean} [required] - Is this checkbox group required? Adds *.
+ * @param {boolean} [other] - Does this checkbox group have "Others: "?
+ * @param {function} onChange - onChange callback.
+ * @param {object} errors - An object of error messages.
+ * @param {object} touched - An object of inputs touched by the user.
+ */
 const Checkboxes = (props) => {
   const {
     options, name, labelText, required, other, onChange, errors = {}, touched = {},

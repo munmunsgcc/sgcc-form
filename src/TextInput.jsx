@@ -3,6 +3,17 @@ import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import COMPONENTS from './globals';
 
+/**
+ * Creates a text input.
+ * @param {string} [type] - The type of input. Defaults to text.
+ * @param {string} name - Name of the text input.
+ * @param {string} [placeholder] - Placeholder text.
+ * @param {function} onChange - onChange callback.
+ * @param {string} labelText - The accompanying text for the text input.
+ * @param {boolean} [required] - Adds * to the label text
+ * @param {object} touched - An object of inputs touched by the user.
+ * @param {object} touched - An object of error messages
+ */
 const TextInput = (props) => {
   const {
     type,

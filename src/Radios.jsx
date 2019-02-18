@@ -3,6 +3,16 @@ import PropTypes from 'prop-types';
 import { Field } from 'formik';
 import COMPONENTS from './globals';
 
+/**
+ * A general function to create a row of radio item.
+ * @param {Object} *
+ * @param {string} name - The name of the radio input
+ * @param {string} key - The React's key
+ * @param {func} handler - The onChange callback.
+ * @param {string} text - The accompanying text for this radio input
+ * @param {string} value - The value of the radio input
+ * @param {React.Component} [input] - An additional component
+ */
 function row({
   name, key, handler, text, value, input,
 }) {
@@ -14,6 +24,20 @@ function row({
     </div>
   );
 }
+
+/**
+ * Creates a group of radio inputs.
+ * @param {Object[]} options - An array of radio inputs.
+ * @param {string} options[].value - The single radio's value.
+ * @param {string} options[].text - The accompanying text.
+ * @param {boolean} [required] - Is this group of radios required? Adds * to the label.
+ * @param {boolean} [other] - Is there a "Other:" radio option?
+ * @param {string} name - The name for the group of radios.
+ * @param {function} onChange - The onChange callback.
+ * @param {string} labelText - The label text for the group of radios.
+ * @param {object} errors - An object of error messages.
+ * @param {object} touched - An object of inputs touched by the user.
+ */
 
 class Radios extends React.Component {
   render() {
