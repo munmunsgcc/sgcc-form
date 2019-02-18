@@ -1,12 +1,21 @@
 import React from 'react';
+import { Field } from 'formik';
 import PropTypes from 'prop-types';
 import COMPONENTS from './globals';
 
 const TextInput = (props) => {
   const {
-    type, name, placeholder, onChange, labelText, required, error = {},
+    type,
+    name,
+    placeholder,
+    onChange,
+    labelText,
+    required,
+    touched = {},
+    errors = {},
   } = props;
   const showStar = required ? <COMPONENTS.star /> : '';
+  const showError = errors[name] && touched[name];
 
   return (
     <COMPONENTS.input>
@@ -14,14 +23,14 @@ const TextInput = (props) => {
         {labelText}
         {showStar}
       </label>
-      <input
+      <Field
         type={type || 'text'}
         name={name}
         onChange={onChange}
-        className={error[name] ? 'Error' : ''}
+        className={showError ? 'Error' : ''}
         placeholder={placeholder || ''}
       />
-      {error[name] ? <p className="Error">{error[name]}</p> : null}
+      {showError ? <p className="Error">{errors[name]}</p> : null}
     </COMPONENTS.input>
   );
 };
@@ -33,7 +42,8 @@ TextInput.defaultProps = {
   onChange: () => {},
   labelText: '',
   required: false,
-  error: {},
+  errors: {},
+  touched: {},
 };
 
 TextInput.propTypes = {
@@ -43,7 +53,8 @@ TextInput.propTypes = {
   onChange: PropTypes.func,
   labelText: PropTypes.string,
   required: PropTypes.bool,
-  error: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  errors: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  touched: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
 export default TextInput;
